@@ -1,10 +1,11 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { v4 as uuidv4 } from 'uuid'; // Assuming you have uuid installed
+import { v4 as uuidv4 } from 'uuid';
 
 interface Notification {
   id: string;
   message: string;
   read: boolean;
+  timestamp: Date;
 }
 
 interface NotificationContextType {
@@ -24,13 +25,14 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
       id: uuidv4(),
       message,
       read: false,
+      timestamp: new Date(),
     };
-    setNotifications((prevNotifications) => [...prevNotifications, newNotification]);
+    setNotifications((prev) => [newNotification, ...prev]);
   };
 
   const markAsRead = (id: string) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notification) =>
+    setNotifications((prev) =>
+      prev.map((notification) =>
         notification.id === id ? { ...notification, read: true } : notification
       )
     );
@@ -41,7 +43,14 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   };
 
   return (
-    <NotificationContext.Provider value={{ notifications, addNotification, markAsRead, clearNotifications }}>
+    <NotificationContext.Provider 
+      value={{ 
+        notifications, 
+        addNotification, 
+        markAsRead,
+        clearNotifications
+      }}
+    >
       {children}
     </NotificationContext.Provider>
   );
