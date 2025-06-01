@@ -7,24 +7,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-// Create client with custom fetch configuration
+// Create client with minimal configuration
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true
-  },
-  global: {
-    headers: {
-      'x-application-name': 'ecommerce-app'
-    },
-    fetch: (url, options) => {
-      const fetchOptions = {
-        ...options,
-        credentials: 'include' as RequestCredentials,
-      };
-      return fetch(url, fetchOptions);
-    }
   },
   db: {
     schema: 'public'
