@@ -8,20 +8,26 @@ import { Product } from '../types';
 const HomePage: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
+        setError(null);
         const { data, error } = await supabase
           .from('products')
           .select('*')
           .eq('featured', true)
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          throw error;
+        }
+
         setFeaturedProducts(data || []);
       } catch (error) {
         console.error('Error fetching featured products:', error);
+        setError('Failed to load featured products. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -55,6 +61,13 @@ const HomePage: React.FC = () => {
       <section className="py-16">
         <div className="container mx-auto px-4 md:px-6">
           <h2 className="text-2xl md:text-3xl font-semibold text-center mb-10">Featured Products</h2>
+          
+          {error && (
+            <div className="text-center mb-8 p-4 bg-red-50 text-red-600 rounded-lg">
+              {error}
+            </div>
+          )}
+          
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
